@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Electro GP - Materiales</title>
+</head>
+<body>
+    <h1>Lista materiales</h1>
+    <table>
+        <thead>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Stock</th>
+        </thead>
+        <tr data-th-each="material: ${materiales}">
+            <td data-th-text="${material.id}"></td>
+            <td data-th-text="${material.nombre}"></td>
+            <td data-th-text="${material.descripcion}"></td>
+            <td data-th-text="${material.stock}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/inicio}"></a>
+</body>
+</html>

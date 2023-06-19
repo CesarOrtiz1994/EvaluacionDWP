@@ -3,6 +3,7 @@ package mx.edu.uteq.evaluacionidgs06.controllers;
 import mx.edu.uteq.evaluacionidgs06.models.User;
 import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,7 @@ public class AuthController {
     public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
         User existingUser = usuarioDao.findByEmail(username);
 
+        //retorna mensaje en caso de datos erroneos
         if (existingUser == null || password == existingUser.getPassword()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Datos incorrectos");
@@ -53,9 +55,10 @@ public class AuthController {
         // Generar token (puedes implementar tu propio método para generar tokens)
         String token = generateToken(existingUser);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .header("Set-Cookie", "cookie_token=" + token + "; Max-Age=1440; Path=/")
-                .body("Bienvenido");
+        // Si las credenciales son válidas
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/inicio"); // Ruta a la página de bienvenida
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     /**
