@@ -29,6 +29,11 @@ public class ViewController {
         return "private/inicio";
     }
 
+    @RequestMapping("/registro")
+    public String registro() {
+        return "public/registro";
+    }
+
     @GetMapping("/list-materiales")
     public String listaMateriales(Model model) {
         Iterable<Materiales> materiales = materialesDao.findAll();
