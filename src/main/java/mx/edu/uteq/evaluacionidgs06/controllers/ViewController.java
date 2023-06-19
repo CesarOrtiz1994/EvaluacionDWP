@@ -34,6 +34,11 @@ public class ViewController {
         return "public/login";
     }
 
+    @RequestMapping("/registro")
+    public String register() {
+        return "private/registro";
+    }
+
     @RequestMapping("/inicio")
     public String inicio() {
         return "private/inicio";
