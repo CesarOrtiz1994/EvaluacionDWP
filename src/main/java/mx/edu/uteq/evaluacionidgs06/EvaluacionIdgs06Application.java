@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EvaluacionIdgs06Application {
 
     public static void main(String[] args) {
+
         SpringApplication.run(EvaluacionIdgs06Application.class, args);
     }
 
