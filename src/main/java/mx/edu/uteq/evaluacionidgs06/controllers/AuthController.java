@@ -24,19 +24,23 @@ public class AuthController {
      * Registra un usuario
      */
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody User user) {
+    public ResponseEntity<Object> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, User user) {
         // Validación de los datos
-        if (usuarioDao.existsByEmail(user.getEmail())) {
+        if (usuarioDao.existsByEmail(email)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("El correo electrónico ya está registrado");
         }
 
         // Crear usuario
-        user.setPassword(user.getPassword());
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setType("1");
         usuarioDao.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Usuario creado correctamente");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/"); // tiene que ser la misma ruta que en ViewController
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     /**
@@ -57,6 +61,7 @@ public class AuthController {
 
         // Si las credenciales son válidas
         HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", "cookie_token=" + token + "; Max-Age=1440; Path=/");
         headers.add("Location", "/inicio"); // Ruta a la página de bienvenida
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
