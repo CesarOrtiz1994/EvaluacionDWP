@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Electro GP - Iniciar sesión</title>
+</head>
+<body>
+    <h1>Electro GP</h1>
+    <h2>Iniciar sesión</h2>
+    <form th:action="@{/api/login}" method="post" enctype="application/json">
+    <label for="username">Usuario</label>
+        <input type="text" name="username" id="username">
+        <label for="password">Contraseña</label>
+        <input type="password" name="password" id="password">
+        <button type="submit">Iniciar sesión</button>
+    </form>
+    <a th:href="@{/}">Inicio</a>
+
+</body>
+</html>
