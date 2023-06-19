@@ -5,6 +5,7 @@ import mx.edu.uteq.evaluacionidgs06.models.Materiales;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,6 +18,11 @@ public class ViewController {
     @RequestMapping("/")
     public String index() {
         return "index";
+    }
+
+    @ExceptionHandler(Exception.class)
+    public String handleError() {
+        return "error"; // Nombre de la vista de error, por ejemplo, "error.html"
     }
 
     @RequestMapping("/about")
