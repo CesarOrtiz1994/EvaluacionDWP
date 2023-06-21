@@ -42,7 +42,7 @@ public class ViewController {
 
     @RequestMapping("/registro")
     public String register() {
-        return "private/registro";
+        return "private/usuarios/registro";
     }
 
     @RequestMapping("/recuperar")
@@ -62,10 +62,16 @@ public class ViewController {
         return "private/materiales/list-materiales";
     }
 
-    @GetMapping("/agregar-material")
-    public String agregarMaterial(Model model, Materiales material){
-        model.addAttribute("operacion", "Agregar Material");
-        return "private/materiales/frm-material";
+    @GetMapping("/invetario")
+    public String inventario(Model model){
+        Iterable<Materiales> materiales = materialesDao.findAll();
+        model.addAttribute("materiales", materiales);
+        return "private/materiales/inventario";
+    }
+
+    @GetMapping("/usuarios")
+    public String usuarios(Model model){
+        return "private/usuarios/list-usuarios";
     }
 
 }
