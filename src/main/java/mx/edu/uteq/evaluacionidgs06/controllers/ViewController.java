@@ -45,6 +45,11 @@ public class ViewController {
         return "private/registro";
     }
 
+    @RequestMapping("/recuperar")
+    public String recuperar() {
+        return "public/recuperar";
+    }
+
     @RequestMapping("/inicio")
     public String inicio() {
         return "private/inicio";
