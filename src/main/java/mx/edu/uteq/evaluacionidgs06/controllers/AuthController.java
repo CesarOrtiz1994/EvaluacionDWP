@@ -26,8 +26,6 @@ public class AuthController {
     @Autowired
     IMaterialesDao materialesDao;
 
-
-
     /**
      * Registra un usuario
      */
@@ -47,7 +45,7 @@ public class AuthController {
         usuarioDao.save(user);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/"); // tiene que ser la misma ruta que en ViewController
+        headers.add("Location", "/usuarios"); // tiene que ser la misma ruta que en ViewController
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
@@ -85,16 +83,17 @@ public class AuthController {
     @PostMapping("/materiales/stock_update")
     public String stockUpdate(@RequestParam("id") Long id, @RequestParam("stock") String stock ){
         Materiales material = materialesDao.findById(id).orElse(null);
-        material.setStock(Integer.parseInt(stock));
+        material.setStock(Integer.parseInt(stock) + material.getStock());
         materialesDao.save(material);
         return "redirect:/inventario";
     }
     @PostMapping("/login")
-    public String login(@Valid User user, BindingResult bindingResult ) {
+    public String login(@Valid User user, BindingResult bindingResult, HttpSession session ){
         // Check for validation errors
         if (bindingResult.hasErrors()) {
             // Get all field error messages
-                return "public/login";
+            session.setAttribute("loggedInUser", user);
+            return "public/login";
 
         }
         User existingUser = usuarioDao.findByEmail(user.getEmail());
@@ -102,6 +101,8 @@ public class AuthController {
             bindingResult.rejectValue("email", "error.user", "Datos incorrectos");
             return "public/login";
         }
+
+        session.setAttribute("loggedInUser", existingUser);
         return "redirect:/inicio";
     }
 

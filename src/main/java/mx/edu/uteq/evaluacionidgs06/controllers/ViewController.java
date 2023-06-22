@@ -1,5 +1,6 @@
 package mx.edu.uteq.evaluacionidgs06.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import mx.edu.uteq.evaluacionidgs06.dao.IMaterialesDao;
 import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import mx.edu.uteq.evaluacionidgs06.models.Materiales;
@@ -48,11 +49,17 @@ public class ViewController {
     }
 
     @RequestMapping("/registro")
-    public String register() {
+    public String register(HttpSession session){
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
         return "private/usuarios/registro";
     }
     @RequestMapping("/registro_material")
-    public String materialRegister() {
+    public String materialRegister(HttpSession session){
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
         return "private/materiales/registro";
     }
     @RequestMapping("/recuperar")
@@ -69,26 +76,42 @@ public class ViewController {
     }
 
     @RequestMapping("/inicio")
-    public String inicio() {
+    public String inicio(HttpSession session, User user, Model model) {
+
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
+        User admin = (User) session.getAttribute("loggedInUser");
+        model.addAttribute("user", admin);
         return "private/inicio";
     }
 
     @GetMapping("/list-materiales")
-    public String listaMateriales(Model model) {
+    public String listaMateriales(Model model, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
+
         Iterable<Materiales> materiales = materialesDao.findAll();
         model.addAttribute("materiales", materiales);
         return "private/materiales/list-materiales";
     }
 
     @GetMapping("/inventario")
-    public String inventario(Model model){
+    public String inventario(Model model, HttpSession session){
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
         Iterable<Materiales> materiales = materialesDao.findAll();
         model.addAttribute("materiales", materiales);
         return "private/materiales/inventario";
     }
 
     @GetMapping("/usuarios")
-    public String usuarios(Model model){
+    public String usuarios(Model model, HttpSession session){
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
         Iterable<User> usuarios = usuarioDao.findAll();
         model.addAttribute("usuarios", usuarios);
         return "private/usuarios/list-usuarios";
