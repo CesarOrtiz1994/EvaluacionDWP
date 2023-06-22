@@ -1,6 +1,7 @@
 package mx.edu.uteq.evaluacionidgs06.controllers;
 
 import mx.edu.uteq.evaluacionidgs06.dao.IMaterialesDao;
+import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import mx.edu.uteq.evaluacionidgs06.models.Materiales;
 import mx.edu.uteq.evaluacionidgs06.models.UpdatePassword;
 import mx.edu.uteq.evaluacionidgs06.models.User;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class ViewController {
+    @Autowired
+    IUsuarioDao usuarioDao;
     @Autowired
     IMaterialesDao materialesDao;
 
@@ -48,7 +51,10 @@ public class ViewController {
     public String register() {
         return "private/usuarios/registro";
     }
-
+    @RequestMapping("/registro_material")
+    public String materialRegister() {
+        return "private/materiales/registro";
+    }
     @RequestMapping("/recuperar")
     public String recuperar(User user, Model model)
     {
@@ -83,6 +89,8 @@ public class ViewController {
 
     @GetMapping("/usuarios")
     public String usuarios(Model model){
+        Iterable<User> usuarios = usuarioDao.findAll();
+        model.addAttribute("usuarios", usuarios);
         return "private/usuarios/list-usuarios";
     }
 

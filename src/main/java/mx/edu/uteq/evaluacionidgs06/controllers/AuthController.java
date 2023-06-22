@@ -3,6 +3,8 @@ package mx.edu.uteq.evaluacionidgs06.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import mx.edu.uteq.evaluacionidgs06.dao.IMaterialesDao;
+import mx.edu.uteq.evaluacionidgs06.models.Materiales;
 import mx.edu.uteq.evaluacionidgs06.models.User;
 import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthController {
 
-    private final IUsuarioDao usuarioDao;
-
     @Autowired
-    public AuthController(IUsuarioDao usuarioDao) {
-        this.usuarioDao = usuarioDao;
-    }
+    IUsuarioDao usuarioDao;
+    @Autowired
+    IMaterialesDao materialesDao;
+
+
 
     /**
      * Registra un usuario
@@ -49,6 +51,44 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    /**
+     * Registra un material
+     */
+    @PostMapping("/register_material")
+    public ResponseEntity<Object> registerMaterial( @RequestParam("nombre") String nombre, @RequestParam("descripcion") String descripcion,  Materiales material) {
+        // Crear usuario
+        material.setNombre(nombre);
+        material.setDescripcion(descripcion);
+        materialesDao.save(material);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/list-materiales");
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+    @GetMapping("/eliminar_material/{id}")
+    public String eliminarMaterial(@PathVariable("id") Long id) {
+        // Obtener el usuario por su ID
+        Materiales material = materialesDao.findById(id).orElse(null);
+
+        // Verificar si el usuario existe
+        if (material == null) {
+            // Manejar el caso de usuario no encontrado
+            // Puedes redirigir a una página de error o mostrar un mensaje de error en la vista
+            return "redirect:/materiales"; // Redirigir a la lista de usuarios
+        }
+
+        // Eliminar el usuario
+        materialesDao.delete(material);
+        return "redirect:/list-materiales"; // Redirigir a la lista de usuarios
+    }
+
+    @PostMapping("/materiales/stock_update")
+    public String stockUpdate(@RequestParam("id") Long id, @RequestParam("stock") String stock ){
+        Materiales material = materialesDao.findById(id).orElse(null);
+        material.setStock(Integer.parseInt(stock));
+        materialesDao.save(material);
+        return "redirect:/inventario";
+    }
     @PostMapping("/login")
     public String login(@Valid User user, BindingResult bindingResult ) {
         // Check for validation errors
@@ -65,15 +105,6 @@ public class AuthController {
         return "redirect:/inicio";
     }
 
-    /**
-     * Cierra sesión
-     */
-    @PostMapping("/logout")
-    public ResponseEntity<Object> logout() {
-        return ResponseEntity.status(HttpStatus.OK)
-                .header("Set-Cookie", "cookie_token=; Max-Age=0; Path=/")
-                .body("Sesión cerrada");
-    }
 
     /**
      * Perfil de usuario
@@ -85,6 +116,60 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("Perfil de usuario");
+    }
+    /**
+     * editar usuario
+     */
+    @PostMapping("/usuarios/editar")
+    public String editarUsuario(@RequestParam Long id, @RequestParam String nombre, @RequestParam String email, @RequestParam String password) {
+        System.out.println("guardando usuario...");
+        // Obtener el usuario existente
+        User usuario = usuarioDao.findById(id).orElse(null);
+
+        // Verificar si el usuario existe
+        if (usuario == null) {
+            // Manejar el caso de usuario no encontrado
+            // Puedes redirigir a una página de error o mostrar un mensaje de error en la vista
+            return "redirect:/usuarios"; // Redirigir a la lista de usuarios
+        }
+
+        // Actualizar los datos del usuario
+        usuario.setName(nombre);
+        usuario.setEmail(email);
+        usuario.setPassword(password);
+
+        // Guardar los cambios en la base de datos
+        usuarioDao.save(usuario);
+
+        return "redirect:/usuarios"; // Redirigir a la lista de usuarios
+    }
+
+    /**
+     * obtener
+     */
+    @GetMapping("/usuarios/{id}")
+    @ResponseBody
+    public User obtenerUsuario(@PathVariable("id") Long id) {
+        // Obtener el usuario por su ID
+        User usuario = usuarioDao.findById(id).orElse(null);
+        return usuario;
+    }
+
+    @GetMapping("/usuarios/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable("id") Long id) {
+        // Obtener el usuario por su ID
+        User usuario = usuarioDao.findById(id).orElse(null);
+
+        // Verificar si el usuario existe
+        if (usuario == null) {
+            // Manejar el caso de usuario no encontrado
+            // Puedes redirigir a una página de error o mostrar un mensaje de error en la vista
+            return "redirect:/usuarios"; // Redirigir a la lista de usuarios
+        }
+
+        // Eliminar el usuario
+        usuarioDao.delete(usuario);
+        return "redirect:/usuarios"; // Redirigir a la lista de usuarios
     }
 
     // Método para generar el token
@@ -136,4 +221,6 @@ public class AuthController {
         session.invalidate();
         return "redirect:/";
     }
+
+
 }
