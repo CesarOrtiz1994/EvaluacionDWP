@@ -3,7 +3,6 @@ package mx.edu.uteq.evaluacionidgs06.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import mx.edu.uteq.evaluacionidgs06.models.UpdatePassword;
 import mx.edu.uteq.evaluacionidgs06.models.User;
 import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @Controller
 //vinculamos el controlador con la ruta /api
@@ -119,8 +112,7 @@ public class AuthController {
         return "redirect:/recuperar_actualizar";
     }
     @PostMapping("/recuperar_actualizar")
-    public String updatePassword( @RequestParam("newPassword") String newPassword,
-                                 UpdatePassword newobject,HttpSession session, Model model){
+    public String updatePassword( @RequestParam("newPassword") String newPassword,HttpSession session, Model model){
         if(newPassword.isEmpty()){
             model.addAttribute("error", "La contraseña es requerida.");
             return "public/recuperar_actualizar";
@@ -139,4 +131,9 @@ public class AuthController {
     return "public/volver_login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
 }
