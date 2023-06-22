@@ -1,15 +1,27 @@
 package mx.edu.uteq.evaluacionidgs06.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import mx.edu.uteq.evaluacionidgs06.models.UpdatePassword;
 import mx.edu.uteq.evaluacionidgs06.models.User;
 import mx.edu.uteq.evaluacionidgs06.dao.IUsuarioDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+@Controller
 //vinculamos el controlador con la ruta /api
 @RequestMapping("/api")
 public class AuthController {
@@ -44,31 +56,21 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    /**
-     * Inicia sesión
-     */
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password, Model model) {
-        User existingUser = usuarioDao.findByEmail(username);
+    public String login(@Valid User user, BindingResult bindingResult, HttpServletResponse httpServletResponse) {
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            // Get all field error messages
+                return "public/login";
 
-        //retorna mensaje en caso de datos erroneos
-        if (existingUser == null || password == existingUser.getPassword()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Datos incorrectos");
         }
-
-        // Generar token (puedes implementar tu propio método para generar tokens)
-        String token = "1234";
-        model.addAttribute("token", token);
-        // Si las credenciales son válidas
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Set-Cookie", "cookie_token=" + token + "; Max-Age=1440; Path=/");
-        headers.add("Location", "/inicio"); // Ruta a la página de bienvenida
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        User existingUser = usuarioDao.findByEmail(user.getEmail());
+        if (!existingUser.getPassword().equals(user.getPassword())) {
+            bindingResult.rejectValue("email", "error.user", "Datos incorrectos");
+            return "public/login";
+        }
+        return "redirect:/inicio";
     }
-
-
-
 
     /**
      * Cierra sesión
@@ -97,4 +99,44 @@ public class AuthController {
         // Implementa tu lógica para generar el token aquí
         return "token";
     }
+
+    @PostMapping("/recuperar")
+    public String validateUser(@RequestParam("email") String email, @RequestParam("secret") String secret, User user, HttpSession session, Model model) {
+        if (email.isEmpty()) {
+            model.addAttribute("error", "El correo electrónico es requerido.");
+            return "public/recuperar";
+        }
+        else if (secret.isEmpty()) {
+            model.addAttribute("error", "El código secreto es requerido.");
+
+            return "public/recuperar";
+        }
+        else if (!usuarioDao.existsByEmail(email) || !secret.equals("secreto") ) {
+            model.addAttribute("error", "Existe un error en los datos proporcionados.");
+            return "public/recuperar";
+        }
+        session.setAttribute("loggedInUser", user);
+        return "redirect:/recuperar_actualizar";
+    }
+    @PostMapping("/recuperar_actualizar")
+    public String updatePassword( @RequestParam("newPassword") String newPassword,
+                                 UpdatePassword newobject,HttpSession session, Model model){
+        if(newPassword.isEmpty()){
+            model.addAttribute("error", "La contraseña es requerida.");
+            return "public/recuperar_actualizar";
+        }
+        else if (newPassword.length() < 8 ){
+            model.addAttribute("error", "La contraseña debe tener al menos 8 caracteres.");
+            return "public/recuperar_actualizar";
+        }
+
+        User user = (User) session.getAttribute("loggedInUser");
+        user = usuarioDao.findByEmail(user.getEmail());
+        user.setPassword(newPassword);
+        usuarioDao.save(user);
+        session.setAttribute("loggedInUser", user);
+        model.addAttribute("success", "La contraseña se actualizó correctamente.");
+    return "public/volver_login";
+    }
+
 }

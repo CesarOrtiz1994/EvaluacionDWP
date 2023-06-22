@@ -1,5 +1,6 @@
 package mx.edu.uteq.evaluacionidgs06.models;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "users")
@@ -11,10 +12,12 @@ public class User {
 
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "El correo electrónico es requerido")
+    @Email(message = "El correo electrónico debe ser válido")
+  @Column(nullable = false, unique = true)
     private String email;
-
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    @NotBlank(message = "La contraseña es requerida")
     @Column(nullable = false)
     private String password;
 
@@ -59,5 +62,16 @@ public class User {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }
