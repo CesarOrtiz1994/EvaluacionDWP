@@ -80,7 +80,7 @@ public class ViewController {
         return "private/materiales/list-materiales";
     }
 
-    @GetMapping("/invetario")
+    @GetMapping("/inventario")
     public String inventario(Model model){
         Iterable<Materiales> materiales = materialesDao.findAll();
         model.addAttribute("materiales", materiales);
