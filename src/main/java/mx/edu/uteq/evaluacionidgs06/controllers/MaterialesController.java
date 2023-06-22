@@ -5,9 +5,10 @@ import mx.edu.uteq.evaluacionidgs06.dao.IMaterialesDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/api/materiales")
 public class MaterialesController {
 
@@ -75,20 +76,23 @@ public class MaterialesController {
     /**
      * Update actualiza un material
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Materiales material) {
-        Materiales existingMaterial = materialesDao.findById(id).orElse(null);
-        if (existingMaterial == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Material no encontrado");
+    @PostMapping("/editar")
+    public String update(@RequestParam Long id, @RequestParam String nombre, @RequestParam String descripcion) {
+        System.out.println("guardando material...");
+        // Obtener el material existente
+        Materiales material = materialesDao.findById(id).orElse(null);
+        if (material == null) {
+            return "redirect:/error"; // Redirigir a la lista de materiales
         }
 
-        existingMaterial.setNombre(material.getNombre());
-        existingMaterial.setDescripcion(material.getDescripcion());
-        materialesDao.save(existingMaterial);
+        // Actualizar los datos del material
+        material.setNombre(nombre);
+        material.setDescripcion(descripcion);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Material actualizado correctamente");
+        // Guardar los cambios en la base de datos
+        materialesDao.save(material);
+
+        return "redirect:/list-materiales"; // Redirigir a la lista de usuarios
     }
 
     /**

@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 //vinculamos el controlador con la ruta /api
 @RequestMapping("/api")
 public class AuthController {
@@ -52,23 +53,22 @@ public class AuthController {
         User existingUser = usuarioDao.findByEmail(username);
 
         //retorna mensaje en caso de datos erroneos
-        if (existingUser == null || password == existingUser.getPassword()) {
+        if (existingUser == null || !password.equals(existingUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Datos incorrectos");
         }
 
         // Generar token (puedes implementar tu propio método para generar tokens)
-        String token = "1234";
-        model.addAttribute("token", token);
+        String token = generateToken(existingUser);
         // Si las credenciales son válidas
         HttpHeaders headers = new HttpHeaders();
         headers.add("Set-Cookie", "cookie_token=" + token + "; Max-Age=1440; Path=/");
+
+        model.addAttribute("user", existingUser);
+
         headers.add("Location", "/inicio"); // Ruta a la página de bienvenida
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
-
-
-
 
     /**
      * Cierra sesión
@@ -91,6 +91,45 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body("Perfil de usuario");
     }
+
+    /**
+     * editar usuario
+     */
+    @PostMapping("/usuarios/editar")
+    public String editarUsuario(@RequestParam Long id, @RequestParam String nombre, @RequestParam String email, @RequestParam String password) {
+        System.out.println("guardando usuario...");
+        // Obtener el usuario existente
+        User usuario = usuarioDao.findById(id).orElse(null);
+
+        // Verificar si el usuario existe
+        if (usuario == null) {
+            // Manejar el caso de usuario no encontrado
+            // Puedes redirigir a una página de error o mostrar un mensaje de error en la vista
+            return "redirect:/usuarios"; // Redirigir a la lista de usuarios
+        }
+
+        // Actualizar los datos del usuario
+        usuario.setName(nombre);
+        usuario.setEmail(email);
+        usuario.setPassword(password);
+
+        // Guardar los cambios en la base de datos
+        usuarioDao.save(usuario);
+
+        return "redirect:/usuarios"; // Redirigir a la lista de usuarios
+    }
+
+    /**
+     * obtener
+     */
+    @GetMapping("/usuarios/{id}")
+    @ResponseBody
+    public User obtenerUsuario(@PathVariable("id") Long id) {
+        // Obtener el usuario por su ID
+        User usuario = usuarioDao.findById(id).orElse(null);
+        return usuario;
+    }
+
 
     // Método para generar el token
     private String generateToken(User user) {
