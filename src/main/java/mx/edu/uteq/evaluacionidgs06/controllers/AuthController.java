@@ -50,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid User user, BindingResult bindingResult, HttpServletResponse httpServletResponse) {
+    public String login(@Valid User user, BindingResult bindingResult ) {
         // Check for validation errors
         if (bindingResult.hasErrors()) {
             // Get all field error messages
