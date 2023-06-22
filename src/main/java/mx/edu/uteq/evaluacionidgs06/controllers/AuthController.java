@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,7 +48,7 @@ public class AuthController {
      * Inicia sesión
      */
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password, Model model) {
         User existingUser = usuarioDao.findByEmail(username);
 
         //retorna mensaje en caso de datos erroneos
@@ -57,14 +58,17 @@ public class AuthController {
         }
 
         // Generar token (puedes implementar tu propio método para generar tokens)
-        String token = generateToken(existingUser);
-
+        String token = "1234";
+        model.addAttribute("token", token);
         // Si las credenciales son válidas
         HttpHeaders headers = new HttpHeaders();
         headers.add("Set-Cookie", "cookie_token=" + token + "; Max-Age=1440; Path=/");
         headers.add("Location", "/inicio"); // Ruta a la página de bienvenida
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
+
+
+
 
     /**
      * Cierra sesión

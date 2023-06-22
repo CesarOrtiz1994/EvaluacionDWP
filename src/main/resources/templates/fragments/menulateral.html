@@ -1,0 +1,39 @@
+<!-- header.html -->
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 25vw;">
+      <a href="/inicio" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">Electro GP</span>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a th:href="@{/inicio}" class="nav-link text-white" aria-current="page">
+            Home
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/usuarios}" class="nav-link text-white">
+            Usuarios
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/list-materiales}" class="nav-link text-white">
+            Materiales
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/invetario}" class="nav-link text-white">
+            Inventarios
+          </a>
+        </li>
+      </ul>
+      <hr>
+      <ul class="text-small shadow">
+        <li class="nav-item">
+          <a href="#" class="nav-link " aria-current="page">
+            Cerrar Sesion
+          </a>
+        </li>
+      </ul>
+    </div>
+</th:block>

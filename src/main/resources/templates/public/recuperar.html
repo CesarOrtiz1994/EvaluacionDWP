@@ -35,24 +35,16 @@
 <body class="bg-primary">
 <div class="form-signin container rounded mt-5 bg-light">
   <h1 class="text-primary text-center">Electro GP</h1>
-  <h2 class="text-primary text-center">Iniciar sesión</h2>
-  <form th:action="@{/api/login}" method="post" enctype="application/json">
+  <h2 class="text-primary text-center">Recuperar contraseña</h2>
+  <form>
     <div class="form-floating">
       <input type="email" name="username" id="username" class="form-control mb-2" placeholder="nombre@ejemplo.com">
-      <label for="username">Usuario</label>
+      <label for="username">correo electronico</label>
     </div>
-    <div class="form-floating">
-      <input type="password" class="form-control mb-2" id="password" name="password" placeholder="Contraseña">
-      <label for="password">Contraseña</label>
-    </div>
-    <button class="btn btn-primary w-100 py-2" type="submit">Iniciar sesión</button>
+    <button class="btn btn-primary w-100 py-2" type="submit">Enviar</button>
   </form>
   <hr>
-  <p class="text-danger" th:text="${param.error}"></p> <!-- Mostrar mensaje de error -->
-  <a th:href="@{/recuperar}" style="text-decoration: none; text-align: center">Olvidaste tu contraseña</a>
-  <br>
-  <a th:href="@{/}" style="text-decoration: none; text-align: center">Regresar al inicio</a>
-
+  <a th:href="@{/login}" style="text-decoration: none; text-align: center">Regresar</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
