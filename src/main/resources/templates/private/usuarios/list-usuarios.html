@@ -105,6 +105,10 @@
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" name="password" th:value="${usuario.password}">
             </div>
+            <div class="mb-3">
+              <label for="secreto" class="form-label">Secreto</label>
+              <input type="text" class="form-control" id="secreto" name="secreto" th:value="${usuario.secreto}">
+            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
               <button type="submit" class="btn btn-primary">Guardar cambios</button>

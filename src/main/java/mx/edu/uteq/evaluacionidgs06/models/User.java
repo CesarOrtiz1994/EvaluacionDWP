@@ -14,7 +14,7 @@ public class User {
     private String name;
     @NotBlank(message = "El correo electrónico es requerido")
     @Email(message = "El correo electrónico debe ser válido")
-  @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     @NotBlank(message = "La contraseña es requerida")
@@ -23,6 +23,9 @@ public class User {
 
     @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
+    private String secreto;
 
     public Long getId() {
         return id;
@@ -62,6 +65,14 @@ public class User {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public  String getSecreto(){
+        return secreto;
+    }
+
+    public void setSecreto(String secreto){
+        this.secreto = secreto;
     }
 
     @Override

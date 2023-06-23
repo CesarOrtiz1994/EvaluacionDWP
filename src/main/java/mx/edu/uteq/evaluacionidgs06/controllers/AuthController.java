@@ -30,7 +30,7 @@ public class AuthController {
      * Registra un usuario
      */
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, User user) {
+    public ResponseEntity<Object> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, @RequestParam String secreto, User user) {
         // Validación de los datos
         if (usuarioDao.existsByEmail(email)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -41,6 +41,7 @@ public class AuthController {
         user.setName(name);
         user.setEmail(email);
         user.setPassword(password);
+        user.setSecreto(secreto);
         user.setType("1");
         usuarioDao.save(user);
 
@@ -122,7 +123,7 @@ public class AuthController {
      * editar usuario
      */
     @PostMapping("/usuarios/editar")
-    public String editarUsuario(@RequestParam Long id, @RequestParam String nombre, @RequestParam String email, @RequestParam String password) {
+    public String editarUsuario(@RequestParam Long id, @RequestParam String nombre, @RequestParam String email, @RequestParam String password, @RequestParam String secreto) {
         System.out.println("guardando usuario...");
         // Obtener el usuario existente
         User usuario = usuarioDao.findById(id).orElse(null);
@@ -138,7 +139,7 @@ public class AuthController {
         usuario.setName(nombre);
         usuario.setEmail(email);
         usuario.setPassword(password);
-
+        usuario.setSecreto(secreto);
         // Guardar los cambios en la base de datos
         usuarioDao.save(usuario);
 
@@ -180,7 +181,8 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar")
-    public String validateUser(@RequestParam("email") String email, @RequestParam("secret") String secret, User user, HttpSession session, Model model) {
+    public String validateUser(@RequestParam String email, @RequestParam String secret, User user, HttpSession session, Model model) {
+        User dataUser = usuarioDao.findByEmail(email);
         if (email.isEmpty()) {
             model.addAttribute("error", "El correo electrónico es requerido.");
             return "public/recuperar";
@@ -190,7 +192,7 @@ public class AuthController {
 
             return "public/recuperar";
         }
-        else if (!usuarioDao.existsByEmail(email) || !secret.equals("secreto") ) {
+        else if (!usuarioDao.existsByEmail(email) || !secret.equals(dataUser.getSecreto()) ) {
             model.addAttribute("error", "Existe un error en los datos proporcionados.");
             return "public/recuperar";
         }
